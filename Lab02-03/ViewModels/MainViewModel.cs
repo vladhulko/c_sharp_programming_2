@@ -1,9 +1,8 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using Lab02_03.Exceptions;
 using Lab02_03.Models;
 
 namespace Lab02_03.ViewModels
@@ -76,23 +75,8 @@ namespace Lab02_03.ViewModels
             ResultText = "";
             try
             {
-
                 await Task.Delay(1000);
                 Person person = new Person(FirstName, LastName, Email, BirthDate.Value);
-
-                if (person.BirthDate > DateTime.Today)
-                {
-                    MessageBox.Show("Birth date must be real.");
-                    return;
-                }
-
-                int age = DateTime.Today.Year - person.BirthDate.Year;
-                if (person.BirthDate > DateTime.Today.AddYears(-age)) age--;
-                if (age > 135)
-                {
-                    MessageBox.Show("Age cannot be higher than 135.");
-                    return;
-                }
 
                 ResultText = $"First Name: {person.FirstName}\n" +
                              $"Last Name: {person.LastName}\n" +
@@ -105,6 +89,10 @@ namespace Lab02_03.ViewModels
 
                 var resultsWindow = new ResultsWindow(ResultText);
                 resultsWindow.Show();
+            }
+            catch (ValidationException ex)
+            {
+                MessageBox.Show(ex.Message, "Validation Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {

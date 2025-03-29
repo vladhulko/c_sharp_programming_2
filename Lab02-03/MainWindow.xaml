@@ -40,6 +40,7 @@
         </StackPanel>
 
         <Button Grid.Row="4"
+                IsDefault="True"
                 Content="Proceed"
                 Height="35"
                 Margin="0,20"

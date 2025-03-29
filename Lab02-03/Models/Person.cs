@@ -1,4 +1,5 @@
 ﻿using System;
+using Lab02_03.Exceptions;
 
 namespace Lab02_03.Models
 {
@@ -13,30 +14,55 @@ namespace Lab02_03.Models
         public string SunSign { get; }
         public string ChineseSign { get; }
         public bool IsBirthday { get; }
+        
+        private bool IsValidName(string value)
+        {
+            return System.Text.RegularExpressions.Regex.IsMatch(value, @"^[\p{L}]+$");
+        }
 
         public Person(string firstName, string lastName, string email, DateTime birthDate)
         {
+            if (string.IsNullOrWhiteSpace(firstName) || !IsValidName(firstName))
+                throw new InvalidFirstNameException(firstName);
             FirstName = firstName;
+
+            if (string.IsNullOrWhiteSpace(lastName) || !IsValidName(lastName))
+                throw new InvalidLastNameException(lastName);
             LastName = lastName;
+
+            if (string.IsNullOrWhiteSpace(email) || !IsValidEmail(email))
+                throw new InvalidEmailException(email);
             Email = email;
+
+            if (birthDate > DateTime.Today)
+                throw new InvalidBirthDateException("Birth date cannot be in the future.");
+            int age = CalculateAge(birthDate);
+            if (age > 135)
+                throw new InvalidBirthDateException("Age cannot be higher than 135.");
+
             BirthDate = birthDate;
 
-            IsAdult = CalculateAge() >= 18;
+            IsAdult = age >= 18;
             SunSign = CalculateSunSign();
             ChineseSign = CalculateChineseSign();
             IsBirthday = BirthDate.Day == DateTime.Today.Day && BirthDate.Month == DateTime.Today.Month;
         }
 
-        public Person(string firstName, string lastName, string email)
-            : this(firstName, lastName, email, DateTime.MinValue) { }
-
-        public Person(string firstName, string lastName, DateTime birthDate)
-            : this(firstName, lastName, "", birthDate) { }
-
-        private int CalculateAge()
+        private bool IsValidEmail(string email)
         {
-            int age = DateTime.Today.Year - BirthDate.Year;
-            if (BirthDate > DateTime.Today.AddYears(-age)) age--;
+            if (string.IsNullOrWhiteSpace(email))
+                return false;
+            string pattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
+            return System.Text.RegularExpressions.Regex.IsMatch(email, pattern);
+        }
+
+        private int CalculateAge(DateTime birthDate)
+        {
+            int age = DateTime.Today.Year - birthDate.Year;
+            if (birthDate > DateTime.Today.AddYears(-age))
+            {
+                age--;
+            }
             return age;
         }
 
@@ -60,7 +86,7 @@ namespace Lab02_03.Models
 
         private string CalculateChineseSign()
         {
-            string[] signs = {"Monkey", "Rooster", "Dog", "Pig", "Rat", "Ox", "Tiger", "Rabbit", "Dragon", "Snake", "Horse", "Goat"};
+            string[] signs = { "Monkey", "Rooster", "Dog", "Pig", "Rat", "Ox", "Tiger", "Rabbit", "Dragon", "Snake", "Horse", "Goat" };
             return signs[BirthDate.Year % 12];
         }
     }
