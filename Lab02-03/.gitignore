@@ -1,0 +1,15 @@
+﻿.idea/
+*.sln.iml
+*.user
+*.suo
+*.sln.docstates
+*.Rider/
+*.DotSettings*
+*.csproj.user
+
+bin/
+obj/
+
+*.log
+.vscode/
+*.tmp
